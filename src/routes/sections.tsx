@@ -20,50 +20,59 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 // ----------------------------------------------------------------------
 
 const renderFallback = (
-  <Box display="flex" alignItems="center" justifyContent="center" flex="1 1 auto">
-    <LinearProgress
-      sx={{
-        width: 1,
-        maxWidth: 320,
-        bgcolor: (theme) => varAlpha(theme.vars.palette.text.primaryChannel, 0.16),
-        [`& .${linearProgressClasses.bar}`]: { bgcolor: 'text.primary' },
-      }}
-    />
-  </Box>
+    <Box display="flex" alignItems="center" justifyContent="center" flex="1 1 auto">
+        <LinearProgress
+            sx={{
+                width: 1,
+                maxWidth: 320,
+                bgcolor: (theme) => varAlpha(theme.vars.palette.text.primaryChannel, 0.16),
+                [`& .${linearProgressClasses.bar}`]: { bgcolor: 'text.primary' },
+            }}
+        />
+    </Box>
 );
 
 export function Router() {
-  return useRoutes([
-    {
-      element: (
-        <DashboardLayout>
-          <Suspense fallback={renderFallback}>
-            <Outlet />
-          </Suspense>
-        </DashboardLayout>
-      ),
-      children: [
-        { element: <HomePage />, index: true },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-      ],
-    },
-    {
-      path: 'sign-in',
-      element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
-      ),
-    },
-    {
-      path: '404',
-      element: <Page404 />,
-    },
-    {
-      path: '*',
-      element: <Navigate to="/404" replace />,
-    },
-  ]);
+    return useRoutes([
+        {
+            path: '/',
+            element: (
+                <AuthLayout>
+                    <SignInPage />
+                </AuthLayout>
+            ),
+            index: true,
+        },
+        {
+            element: (
+                <DashboardLayout>
+                    <Suspense fallback={renderFallback}>
+                        <Outlet />
+                    </Suspense>
+                </DashboardLayout>
+            ),
+            children: [
+                { path: 'home', element: <HomePage /> }, // Move HomePage to /home route
+                { path: 'user', element: <UserPage /> },
+                { path: 'products', element: <ProductsPage /> },
+                { path: 'blog', element: <BlogPage /> },
+            ],
+        },
+        {
+            path: 'sign-in',
+            element: (
+                <AuthLayout>
+                    <SignInPage />
+                </AuthLayout>
+            ),
+        },
+        {
+            path: '404',
+            element: <Page404 />,
+        },
+        {
+            path: '*',
+            element: <Navigate to="/404" replace />,
+        },
+    ]);
 }
