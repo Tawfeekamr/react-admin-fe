@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 
-import {PatientView} from "../sections/patient-data/view/patient-view";
+import {LinksView} from "../sections/links/view/links-view";
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ export default function LinksPage() {
         <title> {`Dashboard Links - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <PatientView />
+      <LinksView />
     </>
   );
 }

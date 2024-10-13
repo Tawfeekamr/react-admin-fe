@@ -28,3 +28,19 @@ export interface AuthState {
     setUser: (user: User) => void;
     setToken: (token: string) => void;
 };
+
+
+
+export interface LinkAttribute {
+    name: string;
+    link: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface LinkItem {
+    id: number;
+    attributes: LinkAttribute;
+}
+
+export type LinkItemArray = LinkItem[];

@@ -18,7 +18,7 @@ import { useAuthStore } from '../../services/authService';
 
 export function SignInView() {
     const router = useRouter();
-    const { jwtToken, setUser, setToken, login, getUser} = useAuthStore(); // Extract Zustand state and actions
+    const { jwtToken, login, getUser} = useAuthStore(); // Extract Zustand state and actions
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
@@ -57,7 +57,7 @@ export function SignInView() {
         } finally {
             setLoading(false);
         }
-    }, [email, password, router, login, setUser, setToken]);
+    }, [email, password, router, login, getUser]);
 
     const renderForm = (
         <Box display="flex" flexDirection="column" alignItems="flex-end">

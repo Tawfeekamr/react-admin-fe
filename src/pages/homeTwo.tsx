@@ -36,7 +36,7 @@ export default function Page() {
            <Stack>
                <Typography fontWeight="bold" component="h2" color="blueviolet">Hey {user?.username}:</Typography>
                <Typography>
-                   Here's what's happening with your data today
+                   Here is whats happening with your data today
                </Typography>
            </Stack>
         </DashboardContent>
