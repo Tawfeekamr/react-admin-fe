@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { toast } from 'react-hot-toast';
+import { useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -6,44 +8,56 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import { useRouter } from 'src/routes/hooks';
+
 import { Iconify } from 'src/components/iconify';
-import { login } from 'src/services/authService';
-import { toast } from 'react-hot-toast';
+
+import {useRouter} from "../../routes/hooks";
+import { useAuthStore } from '../../services/authService';
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
     const router = useRouter();
+    const { jwtToken, setUser, setToken, login, getUser} = useAuthStore(); // Extract Zustand state and actions
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
-    if(localStorage.getItem('jwtToken')) {
-        router.push('/home');
-    }
+    // Redirect to home if token is already present in Zustand or localStorage
+    useEffect(() => {
+        const storedToken = jwtToken || localStorage.getItem('jwtToken');
+        if (storedToken) {
+            router.push('/home');
+        }
+    }, [jwtToken, router]);
 
     const handleSignIn = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await login(email, password);
-            console.log('Login successful', data);
+            // Call the login function from Zustand
+            await login(email, password);
+            await getUser();
+
             toast.success('Login successful!');
+
+            // Redirect to home page
             router.push('/home');
         } catch (err: any) {
-            console.log('XXX',err);
+            console.error('Login error:', err);
             if (err?.response?.data?.error) {
                 const message = err.response.data.error.message || 'An error occurred';
                 toast.error(message);
+            } else if (err.message) {
+                toast.error(err.message);
             } else {
-                toast.error('An error occurred, please try again.');
+                toast.error('An unexpected error occurred, please try again.');
             }
         } finally {
             setLoading(false);
         }
-    }, [email, password, router]);
+    }, [email, password, router, login, setUser, setToken]);
 
     const renderForm = (
         <Box display="flex" flexDirection="column" alignItems="flex-end">

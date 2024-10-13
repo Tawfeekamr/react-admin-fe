@@ -1,15 +1,19 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
+
 import PrivateRoute from './components/PrivateRoute';
 
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));
+export const HomeTwoPage = lazy(() => import('src/pages/homeTwo'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const PatientPage = lazy(() => import('src/pages/patient'));
@@ -57,7 +61,7 @@ export function Router() {
             ),
             children: [
                 { path: 'dashboard', element: <LinksPage /> },
-                { path: 'home', element: <HomePage /> },
+                { path: 'home', element: <HomeTwoPage /> },
                 { path: 'patient', element: <PatientPage /> },
                 { path: 'approvals', element: <ApprovalsPage /> },
             ],

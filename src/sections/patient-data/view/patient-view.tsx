@@ -16,14 +16,13 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
+import { TableEmptyRows } from '../table-empty-rows';
 import { PatientTableRow } from '../patient-table-row';
 import { PatientTableHead } from '../patient-table-head';
-import { TableEmptyRows } from '../table-empty-rows';
 import { PatientTableToolbar } from '../patient-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../patient-table-row';
-import {PatientPage} from "../../../routes/sections";
 
 // ----------------------------------------------------------------------
 

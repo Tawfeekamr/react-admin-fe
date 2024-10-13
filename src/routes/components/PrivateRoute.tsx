@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
