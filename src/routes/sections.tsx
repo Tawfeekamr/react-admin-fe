@@ -15,6 +15,8 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const PatientPage = lazy(() => import('src/pages/patient'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
+export const LinksPage = lazy(() => import('src/pages/links'));
+export const ApprovalsPage = lazy(() => import('src/pages/approvals'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -54,10 +56,10 @@ export function Router() {
                 </PrivateRoute>
             ),
             children: [
-                { path: 'dashboard', element: <HomePage /> },
+                { path: 'dashboard', element: <LinksPage /> },
                 { path: 'home', element: <HomePage /> },
                 { path: 'patient', element: <PatientPage /> },
-                { path: 'approvals', element: <ProductsPage /> },
+                { path: 'approvals', element: <ApprovalsPage /> },
             ],
         },
         {
