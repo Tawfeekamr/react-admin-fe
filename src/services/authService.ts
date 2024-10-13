@@ -1,20 +1,58 @@
 import axios from 'axios';
+import { create } from 'zustand';
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import type { User, AuthState } from '../types';
+import {BASE_URL} from "../utils/statics"; // Make sure the `User` type is imported
 
-export const login = async (identifier: string, password: string) => {
-  const response = await axios.post(`${BASE_URL}/api/auth/local`, {
-    identifier,
-    password,
-  });
 
-  // Store the JWT token in local storage or cookies
-  localStorage.setItem('jwtToken', response.data.jwt);
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  jwtToken: localStorage.getItem('jwtToken'),
 
-  return response.data;
-};
+  setUser: (user: User) => set({ user }), // Set the user in Zustand state
+  setToken: (token: string) => {
+    set({ jwtToken: token });
+    localStorage.setItem('jwtToken', token);
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  },
 
-export const logout = () => {
-  // Remove the JWT token from local storage or cookies
-  localStorage.removeItem('jwtToken');
-};
+  login: async (identifier: string, password: string) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/auth/local`, {
+        identifier,
+        password,
+      });
+
+      const { jwt, user } = response.data;
+
+      // Set the token and user in Zustand
+      set({ user });
+      set({ jwtToken: jwt });
+
+      // Store token in localStorage and set Authorization header
+      localStorage.setItem('jwtToken', jwt);
+      axios.defaults.headers.common.Authorization = `Bearer ${jwt}`;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+
+  getUser: async () => {
+    try {
+      axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`;
+      const response = await axios.get(`${BASE_URL}/api/users/me?populate=*&fields=*`);
+      const user = response.data; // Adjust this based on the actual response structure
+      set({ user });
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      throw error;
+    }
+  },
+
+  logout: () => {
+    localStorage.removeItem('jwtToken');
+    set({ user: null, jwtToken: null });
+    delete axios.defaults.headers.common.Authorization;
+  },
+}));
