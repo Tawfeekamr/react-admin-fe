@@ -86,18 +86,18 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 <AccountPopover
                   data={[
                     {
-                      label: 'Home',
-                      href: '/',
+                      label: 'Dashboard Links',
+                      href: '/dashboard',
                       icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" />,
                     },
                     {
-                      label: 'Profile',
-                      href: '#',
+                      label: 'Patient',
+                      href: '/patient',
                       icon: <Iconify width={22} icon="solar:shield-keyhole-bold-duotone" />,
                     },
                     {
-                      label: 'Settings',
-                      href: '#',
+                      label: 'Approvals',
+                      href: '/approvals',
                       icon: <Iconify width={22} icon="solar:settings-bold-duotone" />,
                     },
                   ]}
