@@ -1,3 +1,1 @@
-export const getUserInfo = async (userId: string) => {
-
-}
+export const getUserInfo = async (userId: string) => {};

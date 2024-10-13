@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import type { IPatientData } from 'src/services/patientDataService';
+
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,35 +11,67 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { _users } from 'src/_mock';
+import { useAuthStore } from 'src/services/authService';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { getPatientData } from 'src/services/patientDataService';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
+import PatientDialog from '../patient-dialog';
 import { TableNoData } from '../table-no-data';
 import { TableEmptyRows } from '../table-empty-rows';
 import { PatientTableRow } from '../patient-table-row';
 import { PatientTableHead } from '../patient-table-head';
+import PatientDeleteDialog from '../patient-delete-dialog';
 import { PatientTableToolbar } from '../patient-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
-import type { UserProps } from '../patient-table-row';
 
 // ----------------------------------------------------------------------
 
 export function PatientView() {
   const table = useTable();
 
-  const [filterName, setFilterName] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
+  const [filterName, setFilterName] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [patientData, setPatientData] = useState<IPatientData[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<IPatientData>();
+  const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState<boolean>(false);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
+  const { user, getUser } = useAuthStore();
+  const isAdmin = user?.role.type.toLowerCase() === 'admin';
+
+  const dataFiltered: IPatientData[] = applyFilter({
+    inputData: patientData,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
 
+  const getPatientDataHandler = useCallback(async () => {
+    const response = await getPatientData(1, 10);
+
+    setPatientData(response);
+  }, []);
+
   const notFound = !dataFiltered.length && !!filterName;
+
+  useEffect(() => {
+    getPatientDataHandler();
+  }, [getPatientDataHandler]);
+
+  useEffect(() => {
+    if (selectedPatient && selectedPatient.id) {
+      if (selectedPatient.isEdit) {
+        setIsEdit(true);
+        setIsDialogOpen(true);
+      } else setIsDialogDeleteOpen(true);
+    }
+  }, [selectedPatient]);
+
+  useEffect(() => {
+    if (!user) getUser();
+  }, [user, getUser]);
 
   return (
     <DashboardContent>
@@ -46,11 +80,15 @@ export function PatientView() {
           Patients Data
         </Typography>
         <Button
-          variant="contained"
           color="inherit"
+          variant="contained"
+          onClick={() => {
+            setIsEdit(false);
+            setIsDialogOpen(true);
+          }}
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
-          Upload New Data
+          Upload New Patient Data
         </Button>
       </Box>
 
@@ -69,23 +107,26 @@ export function PatientView() {
             <Table sx={{ minWidth: 800 }}>
               <PatientTableHead
                 order={table.order}
-                orderBy={table.orderBy}
-                rowCount={_users.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
+                orderBy={table.orderBy}
+                rowCount={patientData.length}
+                numSelected={table.selected.length}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _users.map((user) => user.id)
+                    patientData.map((item) => `${item.id}`)
                   )
                 }
                 headLabel={[
+                  { id: 'upload_date', label: 'Upload Date' },
                   { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'approved', label: 'Approved' },
+                  { id: 'approval_send', label: 'Approval Send' },
+                  { id: 'approval_request', label: 'Approval Request' },
+                  { id: 'data_file', label: 'Data File' },
+                  { id: 'reject_reason', label: 'Reject Reason' },
+                  { id: 'processed', label: 'Processed' },
+                  ...(isAdmin ? [{ id: '', label: '' }] : []),
                 ]}
               />
               <TableBody>
@@ -96,16 +137,18 @@ export function PatientView() {
                   )
                   .map((row) => (
                     <PatientTableRow
-                      key={row.id}
                       row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      key={row.id}
+                      isAdmin={isAdmin}
+                      setSelectedPatient={setSelectedPatient}
+                      selected={table.selected.includes(`${row.id}`)}
+                      onSelectRow={() => table.onSelectRow(`${row.id}`)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, patientData.length)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -117,13 +160,28 @@ export function PatientView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={_users.length}
+          count={patientData.length}
           rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}
+          onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <PatientDialog
+        isEdit={isEdit}
+        isAdmin={isAdmin}
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
+        refetch={getPatientDataHandler}
+        selectedPatient={selectedPatient}
+      />
+      <PatientDeleteDialog
+        open={isDialogDeleteOpen}
+        setOpen={setIsDialogDeleteOpen}
+        refetch={getPatientDataHandler}
+        selectedPatient={selectedPatient}
+      />
     </DashboardContent>
   );
 }

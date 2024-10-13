@@ -1,6 +1,6 @@
-import type { UserProps } from './patient-table-row';
-
 // ----------------------------------------------------------------------
+
+import type { IPatientData } from 'src/services/patientDataService';
 
 export const visuallyHidden = {
   border: 0,
@@ -53,7 +53,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: UserProps[];
+  inputData: IPatientData[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };
@@ -71,7 +71,7 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
 
   if (filterName) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (user) => user.attributes.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { create } from 'zustand';
 
-import type { User, AuthState } from '../types';
-import {BASE_URL} from "../utils/statics"; // Make sure the `User` type is imported
+import { BASE_URL } from '../utils/statics';
 
+import type { User, AuthState } from '../types'; // Make sure the `User` type is imported
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,

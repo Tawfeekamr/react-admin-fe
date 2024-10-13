@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 
-import {PatientView} from "../sections/patient-data/view/patient-view";
+import { PatientView } from '../sections/patient-data/view/patient-view';
 
 // ----------------------------------------------------------------------
 

@@ -16,7 +16,7 @@ import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { _myAccount } from 'src/_mock';
 
-import {useAuthStore} from "../../services/authService";
+import { useAuthStore } from '../../services/authService';
 
 // ----------------------------------------------------------------------
 
@@ -31,9 +31,8 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-  const {logout, user} = useAuthStore();
+  const { logout, user } = useAuthStore();
   const pathname = usePathname();
-  console.log('user', user);
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -131,10 +130,16 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text" onClick={() => {
+          <Button
+            fullWidth
+            color="error"
+            size="medium"
+            variant="text"
+            onClick={() => {
               logout();
               router.push('/sign-in');
-          }}>
+            }}
+          >
             Logout
           </Button>
         </Box>
