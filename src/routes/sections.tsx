@@ -1,18 +1,18 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
+import PrivateRoute from './components/PrivateRoute';
 
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
+export const PatientPage = lazy(() => import('src/pages/patient'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -45,17 +45,19 @@ export function Router() {
         },
         {
             element: (
-                <DashboardLayout>
-                    <Suspense fallback={renderFallback}>
-                        <Outlet />
-                    </Suspense>
-                </DashboardLayout>
+                <PrivateRoute>
+                    <DashboardLayout>
+                        <Suspense fallback={renderFallback}>
+                            <Outlet />
+                        </Suspense>
+                    </DashboardLayout>
+                </PrivateRoute>
             ),
             children: [
-                { path: 'home', element: <HomePage /> }, // Move HomePage to /home route
-                { path: 'user', element: <UserPage /> },
-                { path: 'products', element: <ProductsPage /> },
-                { path: 'blog', element: <BlogPage /> },
+                { path: 'dashboard', element: <HomePage /> },
+                { path: 'home', element: <HomePage /> },
+                { path: 'patient', element: <PatientPage /> },
+                { path: 'approvals', element: <ProductsPage /> },
             ],
         },
         {
