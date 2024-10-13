@@ -22,15 +22,17 @@ import { LinksTableToolbar } from '../links-table-toolbar';
 import { emptyRows, getComparator } from '../utils';
 import useLinks from "../../../services/dashboardHook";
 import {LinkItem} from "../../../types";
+import {CreateLinkModal} from "../../../components/modals/CreateLinkModal";
 
 // ----------------------------------------------------------------------
 
 export function LinksView() {
+  const [isModalOpen, setModalOpen] = useState(false);
   const table = useTable();
-  const {links} = useLinks()
+  const { links, setLinks } = useLinks();
   const [filterName, setFilterName] = useState('');
 
-  const dataFiltered: LinkItem[] = applyFilter({
+  const dataFiltered = applyFilter({
     inputData: links,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
@@ -38,92 +40,109 @@ export function LinksView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleLinkCreated = (newLink: any) => {
+    setLinks((prevLinks: any) => [...prevLinks, newLink]);
+    console.log('New link created:', newLink);
+  };
+
   return (
-    <DashboardContent>
-      <Box display="flex" alignItems="center" mb={5}>
-        <Typography variant="h4" flexGrow={1}>
-          Links Data
-        </Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          New Link
-        </Button>
-      </Box>
+      <DashboardContent>
+        <Box display="flex" alignItems="center" mb={5}>
+          <Typography variant="h4" flexGrow={1}>
+            Links Data
+          </Typography>
+          <Button
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={handleOpenModal}
+          >
+            New Link
+          </Button>
+        </Box>
 
-      <Card>
-        <LinksTableToolbar
-          numSelected={table.selected.length}
-          filterName={filterName}
-          onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setFilterName(event.target.value);
-            table.onResetPage();
-          }}
-        />
+        {/* Modal for creating a new link */}
+        <CreateLinkModal open={isModalOpen} onClose={handleCloseModal} onLinkCreated={handleLinkCreated} />
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <LinksTableHead
-                order={table.order}
-                orderBy={table.orderBy}
-                rowCount={links.length}
-                numSelected={table.selected.length}
-                onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                      links.map((link) => String(link.id))
-                  )
-                }
-                headLabel={[
-                  { id: 'id', label: 'ID  ' },
-                  { id: 'name', label: 'Name' },
-                  { id: 'link', label: 'Link' },
-                  { id: 'created', label: 'Created At' },
-                  { id: 'updated', label: 'Updated At' },
-                  { id: '_', label: '' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row) => (
-                    <LinksTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(String(row.id))}
-                      onSelectRow={() => table.onSelectRow(String(row.id))}
-                    />
-                  ))}
+        <Card>
+          <LinksTableToolbar
+              numSelected={table.selected.length}
+              filterName={filterName}
+              onFilterName={(event) => {
+                setFilterName(event.target.value);
+                table.onResetPage();
+              }}
+          />
 
-                <TableEmptyRows
-                  height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, links.length)}
+          <Scrollbar>
+            <TableContainer sx={{ overflow: 'unset' }}>
+              <Table sx={{ minWidth: 800 }}>
+                <LinksTableHead
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    rowCount={links.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    onSelectAllRows={(checked) =>
+                        table.onSelectAllRows(
+                            checked,
+                            links.map((link) => String(link.id))
+                        )
+                    }
+                    headLabel={[
+                      { id: 'id', label: 'ID  ' },
+                      { id: 'name', label: 'Name' },
+                      { id: 'link', label: 'Link' },
+                      { id: 'created', label: 'Created At' },
+                      { id: 'updated', label: 'Updated At' },
+                      { id: '_', label: '' },
+                    ]}
                 />
+                <TableBody>
+                  {dataFiltered
+                      .slice(
+                          table.page * table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row) => (
+                          <LinksTableRow
+                              key={row.id}
+                              row={row}
+                              selected={table.selected.includes(String(row.id))}
+                              onSelectRow={() => table.onSelectRow(String(row.id))}
+                          />
+                      ))}
 
-                {notFound && <TableNoData searchQuery={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                  <TableEmptyRows
+                      height={68}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, links.length)}
+                  />
 
-        <TablePagination
-          component="div"
-          page={table.page}
-          count={links.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-        />
-      </Card>
-    </DashboardContent>
+                  {notFound && <TableNoData searchQuery={filterName} />}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+              component="div"
+              page={table.page}
+              count={links.length}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              rowsPerPageOptions={[5, 10, 25]}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      </DashboardContent>
   );
 }
 

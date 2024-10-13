@@ -27,9 +27,7 @@ export interface AuthState {
     logout: () => void;
     setUser: (user: User) => void;
     setToken: (token: string) => void;
-};
-
-
+}
 
 export interface LinkAttribute {
     name: string;
@@ -44,3 +42,59 @@ export interface LinkItem {
 }
 
 export type LinkItemArray = LinkItem[];
+
+
+
+export interface ApprovalRequest {
+    id: number;
+    attributes: ApprovalRequestAttributes;
+}
+
+export interface PaginationMeta {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+}
+
+export interface ApprovalResponse {
+    data: ApprovalRequestArray;
+    meta: {
+        pagination: PaginationMeta;
+    };
+}
+
+
+export interface EntryAttributes {
+    upload_date: string;
+    name: string;
+    approved: boolean;
+    reject_reason: string | null;
+    processed: boolean;
+    createdAt: string;
+    updatedAt: string;
+    uuid: string;
+    approval_send: string | null;
+    path?: string;
+}
+
+export interface EntryData {
+    id: number;
+    attributes: EntryAttributes;
+}
+
+export interface Entry {
+    data: EntryData;
+}
+
+export interface ApprovalRequestAttributes {
+    date: string;
+    type: string;
+    message: string;
+    data_id: string;
+    createdAt: string;
+    updatedAt: string;
+    entery: Entry;
+}
+
+export type ApprovalRequestArray = ApprovalRequest[];

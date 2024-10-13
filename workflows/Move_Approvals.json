@@ -1,0 +1,276 @@
+{
+  "name": "Move Approvals",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e07d1ceb-6618-4cb0-bf26-aa9e78326d78",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -380,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "command": "if [ ! -d \"/Users/tamro/WebstormProjects/my-project/public/approved\" ]; then\n  mkdir -p \"/Users/tamro/WebstormProjects/my-project/public/approved\";\n  echo \"Folder created\";\nelse\n  echo \"Folder already exists\";\nfi\n"
+      },
+      "id": "b1d0ab50-faee-4a0e-90ca-edae849de767",
+      "name": "Create Approved Folder",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "6a78e791-b96b-451e-b228-53a746c92e43",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8694aa80-0e59-4ce1-8cd3-5421eb20a307",
+              "leftValue": "={{ $json.stdout }}",
+              "rightValue": "=0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "f43088a4-4145-4bf9-ac3c-19c120584c47",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=# Define the source file path from the JSON output\nSOURCE_FILE=\"/Users/tamro/WebstormProjects/my-project/public{{ $json.attributes.path }}\"\n\n# Define the destination directory (the approved folder)\nDEST_DIR=\"/Users/tamro/WebstormProjects/my-project/public/approved\"\n\n# Define the destination file path\nDEST_FILE=\"$DEST_DIR/$(basename $SOURCE_FILE)\"\n\n# Check if the source file exists\nif [ -f \"$SOURCE_FILE\" ]; then\n  # Copy the file to the 'approved' folder\n  cp \"$SOURCE_FILE\" \"$DEST_FILE\"\n  echo \"{{ $json.attributes.entery.data.id }}\";\nelse\n  echo \"Source file does not exist\";\nfi\n"
+      },
+      "id": "dd6bf3d2-afc6-442c-83d4-0932e8b16405",
+      "name": "Copying Approved File",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        540,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:1337/api/approval-requests",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "strapiTokenApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "*"
+            },
+            {
+              "name": "populate",
+              "value": "*"
+            },
+            {
+              "name": "pagination[pageSize]",
+              "value": "1000"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fc3cab14-7590-4ab4-9f5b-9a02f5bae91a",
+      "name": "GET Approvals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        60
+      ],
+      "credentials": {
+        "stripeApi": {
+          "id": "pA3FwR6161RSov2N",
+          "name": "Stripe account"
+        },
+        "strapiTokenApi": {
+          "id": "5s2mh1fQ9k4JALvj",
+          "name": "Strapi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://127.0.0.1:1337/api/patients-data/{{ $json.stdout }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "strapiTokenApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n \"data\": {\n      \"processed\": true\n }\n}",
+        "options": {}
+      },
+      "id": "3b63120d-d319-4155-950b-6ea2b4905ffe",
+      "name": "Set Processed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        40
+      ],
+      "credentials": {
+        "strapiTokenApi": {
+          "id": "5s2mh1fQ9k4JALvj",
+          "name": "Strapi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input data (array of objects)\nconst data = $input.all()?.[0]?.json.data || [];\n\n// Filter the objects where 'approved' is true\nconst approvedData = data.filter(item => item.attributes.entery.data.attributes.approved === true);\n\n// Return the filtered approved data\nreturn approvedData;\n"
+      },
+      "id": "1b87b55d-19f5-4aee-8f53-3819f7d77c45",
+      "name": "Get Approvals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        60
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create Approved Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Approved Folder": {
+      "main": [
+        [
+          {
+            "node": "GET Approvals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create Approved Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Set Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copying Approved File": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Approvals": {
+      "main": [
+        [
+          {
+            "node": "Get Approvals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Processed": {
+      "main": [
+        []
+      ]
+    },
+    "Get Approvals": {
+      "main": [
+        [
+          {
+            "node": "Copying Approved File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8cf872cb-6bbf-40c1-b878-414c13d49d7e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "715a6f8d5475b01dd3acdbac220e7041d6d3efa31f348f05ceb7c24e47dbbbda"
+  },
+  "id": "mYhSsy7pcV7NdfzN",
+  "tags": []
+}

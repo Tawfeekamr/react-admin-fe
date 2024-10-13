@@ -1,0 +1,262 @@
+{
+  "name": "Send Approvals",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1f594b4f-443c-412a-a73b-f37b2d53fb35",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        480,
+        260
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "e4d97e89-7d5a-491a-b8bd-d3802c468470",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:1337/api/patients-data",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "strapiTokenApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "*"
+            },
+            {
+              "name": "populate",
+              "value": "*"
+            },
+            {
+              "name": "pagination[pageSize]",
+              "value": "1000"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f8d28f9d-f80b-4b7b-8fad-a3e707ec801b",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        300
+      ],
+      "credentials": {
+        "stripeApi": {
+          "id": "pA3FwR6161RSov2N",
+          "name": "Stripe account"
+        },
+        "strapiTokenApi": {
+          "id": "5s2mh1fQ9k4JALvj",
+          "name": "Strapi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:1337/api/approval-requests",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "strapiTokenApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "populate",
+              "value": "*"
+            },
+            {
+              "name": "fields",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"data\": {\n    \"type\": \"PATIENT\",\n    \"entery\": {\n      \"disconnect\": [],\n      \"connect\": [\n        {\n          \"id\": \"{{ $json.entery.connect[0].id }}\",\n          \"position\": {\n            \"end\": true\n          }\n        }\n      ]\n    },\n    \"date\": \"{{ $json.date }}\",\n    \"message\": \"{{ $json.message }}\",\n    \"data_id\": \"{{ $json.data_id }}\",\n    \"path\": \"{{ $json.path }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "d841fce0-3868-43c9-ba1d-3bdf2aecf4fb",
+      "name": "HTTP POST",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        300
+      ],
+      "credentials": {
+        "strapiTokenApi": {
+          "id": "5s2mh1fQ9k4JALvj",
+          "name": "Strapi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://127.0.0.1:1337/api/patients-data/{{ $json.data.attributes.entery.data.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "strapiTokenApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n \"data\": {\n      \"approval_send\": true\n }\n}",
+        "options": {}
+      },
+      "id": "76a5f66c-76e9-4f54-9c98-1e8dfdc3cc2e",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "strapiTokenApi": {
+          "id": "5s2mh1fQ9k4JALvj",
+          "name": "Strapi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input data (array of objects)\nconst data = $input.all()?.[0]?.json.data || [];\n\n// Filter the objects where 'approved' is true\nconst approvedData = data.filter((item, index) => {\n  const single = item.attributes;\n  if(!single.approval_send){\n    return single\n  }\n} );\n\n// Return the filtered approved data\nreturn approvedData;\n"
+      },
+      "id": "c17a0f44-9a7e-488d-b4bc-90b5a1073ada",
+      "name": "Get Approvals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize the output array\nconst outputArray = [];\n\n// Retrieve the input data safely\nconst data = $input.all() || []; // Ensure data is retrieved correctly\nconsole.log('data 121', data, $input.all())\n// Loop over each item in the data array\ndata.forEach(item => {\n  const attributes = item.json.attributes;\n\n  // Safely extract file-related attributes\n  const name = attributes.name;\n  const dataFile = attributes.data_file?.data?.attributes || {};\n  const fileName = dataFile.hash || 'unknown-file';\n  const fileUrl = dataFile.url || '';\n  const ext = dataFile.ext || '';\n  const fileId = item.json.id;\n\n  // Construct the output object\n  const outputObject = {\n    type: \"PATIENT\",\n    entery: {\n      disconnect: [],\n      connect: [\n        {\n          id: fileId,\n          position: {\n            end: true\n          }\n        }\n      ]\n    },\n    date: new Date().toISOString(), // Current date in ISO format\n    message: `Please review file ${fileName}${ext}`, // Include extension in the message\n    data_id: fileId.toString(), // Convert fileId to string\n    path: fileUrl\n  };\n\n  // Ensure there are no duplicates in the output array based on fileId\n  if (!outputArray.some(obj => obj.entery.connect.some(connect => connect.id === fileId))) {\n    outputArray.push(outputObject);\n  }\n});\n\n// Return the output array\nreturn outputArray;\n"
+      },
+      "id": "6fbbaa75-5385-464f-aa74-ef4e188f1716",
+      "name": "Create Approval Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        300
+      ],
+      "executeOnce": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get Approvals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP POST": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approvals": {
+      "main": [
+        [
+          {
+            "node": "Create Approval Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Approval Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e9d63bc9-b7af-43b0-9fc5-359bc7836119",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "715a6f8d5475b01dd3acdbac220e7041d6d3efa31f348f05ceb7c24e47dbbbda"
+  },
+  "id": "ZMFH9dNgEBuTUHU2",
+  "tags": []
+}

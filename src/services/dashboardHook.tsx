@@ -26,7 +26,7 @@ const useLinks = () => {
     fetchLinks();
   }, []);
 
-  return { links, loading, error };
+  return { links, loading, error, setLinks };
 };
 
 export default useLinks;

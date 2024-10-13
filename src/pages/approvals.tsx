@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 
-import { PatientView } from '../sections/patient-data/view/patient-view';
+import {ApprovalView} from "../sections/approval/view/approval-view";
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ export default function LinksPage() {
         <title> {`Approvals - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <PatientView />
+      <ApprovalView />
     </>
   );
 }
