@@ -54,13 +54,7 @@ export function LinksTableToolbar({ numSelected, filterName, onFilterName }: Use
             <Iconify icon="solar:trash-bin-trash-bold" />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
-      )}
+      ) : null}
     </Toolbar>
   );
 }

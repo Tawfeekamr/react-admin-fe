@@ -80,14 +80,14 @@ export function PatientTableRow({
 
         <TableCell>{row.attributes.name}</TableCell>
 
-        <TableCell>{`${row.attributes.approved}`}</TableCell>
+        <TableCell>{`${row?.attributes?.approved}`}</TableCell>
 
-        <TableCell>{`${row.attributes.approval_send || '-'}`}</TableCell>
+        <TableCell>{`${row?.attributes?.approval_send || '-'}`}</TableCell>
 
-        <TableCell>{`${row.attributes.approval_request.data || '-'}`}</TableCell>
+        <TableCell>{`${row?.attributes?.approval_request?.data || '-'}`}</TableCell>
 
         <TableCell>
-          {!row.attributes.data_file.data.attributes.url ? (
+          {!row.attributes?.data_file?.data?.attributes?.url ? (
             <div>{` - `}</div>
           ) : (
             <>

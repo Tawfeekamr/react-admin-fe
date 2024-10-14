@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/statics";
-import {ApprovalRequestArray, ApprovalResponse, PaginationMeta} from "../types";
+import { ApprovalRequestArray, ApprovalResponse, PaginationMeta } from "../types";
 
 const useApprovalRequests = () => {
     const [approvalRequests, setApprovalRequests] = useState<ApprovalRequestArray>([]);
@@ -9,27 +9,28 @@ const useApprovalRequests = () => {
     const [error, setError] = useState<string | null>(null);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
 
-    useEffect(() => {
-        const fetchApprovalRequests = async () => {
-            try {
+    const fetchApprovalRequests = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`;
 
-                axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`;
+            const response = await axios.get<ApprovalResponse>(`${BASE_URL}/api/approval-requests?populate=*&fields=*`);
 
-                const response = await axios.get<ApprovalResponse>(`${BASE_URL}/api/approval-requests?populate=*&fields=*`);
-
-                setApprovalRequests(response.data.data);
-                setPagination(response.data.meta.pagination);
-                setLoading(false);
-            } catch (err: any) {
-                setError(err.message || "Failed to fetch approval requests");
-                setLoading(false);
-            }
-        };
-
-        fetchApprovalRequests();
+            setApprovalRequests(response.data.data);
+            setPagination(response.data.meta.pagination);
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch approval requests");
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { approvalRequests, loading, error, pagination };
+    useEffect(() => {
+        fetchApprovalRequests();
+    }, [fetchApprovalRequests]);
+
+    return { approvalRequests, loading, error, pagination, refetch: fetchApprovalRequests };
 };
 
 export default useApprovalRequests;

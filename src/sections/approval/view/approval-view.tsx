@@ -25,8 +25,10 @@ import {ApprovalRequest} from "../../../types";
 
 export function ApprovalView() {
   const table = useTable();
-  const { approvalRequests, loading, error, pagination } = useApprovalRequests();
+  const { approvalRequests, loading, error, pagination, refetch} = useApprovalRequests();
   const [filterName, setFilterName] = useState('');
+
+  console.log('approvalRequests', approvalRequests);
 
   const dataFiltered: ApprovalRequest[] = applyFilter({
     inputData: approvalRequests,
@@ -93,6 +95,7 @@ export function ApprovalView() {
                       row={row}
                       selected={table.selected.includes(String(row.id))}
                       onSelectRow={() => table.onSelectRow(String(row.id))}
+                      refetch={refetch}
                     />
                   ))}
 

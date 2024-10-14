@@ -24,6 +24,33 @@ export const navData = [
   }
 ];
 
+export const navDataReviser = [
+
+  {
+    title: 'Approvals',
+    path: '/approvals',
+    icon: icon('ic-lock'),
+  }
+];
+
+export const navDataEntry = [
+
+  {
+    title: 'Patient Data',
+    path: '/patient',
+    icon: icon('ic-user'),
+  }
+
+];
+
+
+export const navDataNone = [
+  {
+    title: 'Dashboard Links',
+    path: '/dashboard',
+    icon: icon('ic-analytics'),
+  },
+];
 
 // {
 //   title: 'Product',

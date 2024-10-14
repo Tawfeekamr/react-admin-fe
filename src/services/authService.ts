@@ -44,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await axios.get(`${BASE_URL}/api/users/me?populate=*&fields=*`);
       const user = response.data; // Adjust this based on the actual response structure
       set({ user });
+      console.log('User: ***', user);
     } catch (error) {
       console.error('Failed to fetch user:', error);
       throw error;

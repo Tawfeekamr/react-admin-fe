@@ -1,71 +1,78 @@
 export interface Role {
-    id: number;
-    name: string;
-    description: string;
-    type: string;
-    createdAt: string;
-    updatedAt: string;
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    provider: string;
-    confirmed: boolean;
-    blocked: boolean;
-    createdAt: string;
-    updatedAt: string;
-    role: Role;
+  id: number;
+  username: string;
+  email: string;
+  provider: string;
+  confirmed: boolean;
+  blocked: boolean;
+  createdAt: string;
+  updatedAt: string;
+  role: Role;
 }
 
 export interface AuthState {
-    user: User | null;
-    jwtToken: string | null;
-    login: (identifier: string, password: string) => Promise<void>;
-    getUser: () => Promise<void>;
-    logout: () => void;
-    setUser: (user: User) => void;
-    setToken: (token: string) => void;
+  user: User | null;
+  jwtToken: string | null;
+  login: (identifier: string, password: string) => Promise<void>;
+  getUser: () => Promise<void>;
+  logout: () => void;
+  setUser: (user: User) => void;
+  setToken: (token: string) => void;
 }
 
 export interface LinkAttribute {
-    name: string;
-    link: string;
-    createdAt: string;
-    updatedAt: string;
+  name: string;
+  link: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LinkItem {
-    id: number;
-    attributes: LinkAttribute;
+  id: number;
+  attributes: LinkAttribute;
 }
 
 export type LinkItemArray = LinkItem[];
 
-
-
 export interface ApprovalRequest {
-    id: number;
-    attributes: ApprovalRequestAttributes;
+  id: number;
+  attributes: {
+    date: string;
+    type: string;
+    message: string;
+    data_id: string;
+    createdAt: string;
+    updatedAt: string;
+    entery: Entry;
+  };
 }
 
 export interface PaginationMeta {
-    page: number;
-    pageSize: number;
-    pageCount: number;
-    total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
 }
 
 export interface ApprovalResponse {
-    data: ApprovalRequestArray;
-    meta: {
-        pagination: PaginationMeta;
-    };
+  data: ApprovalRequestArray;
+  meta: {
+    pagination: PaginationMeta;
+  };
 }
 
-
-export interface EntryAttributes {
+export interface EntryData {
+  id: number;
+  attributes: {
     upload_date: string;
     name: string;
     approved: boolean;
@@ -76,25 +83,43 @@ export interface EntryAttributes {
     uuid: string;
     approval_send: string | null;
     path?: string;
-}
-
-export interface EntryData {
-    id: number;
-    attributes: EntryAttributes;
+  };
 }
 
 export interface Entry {
-    data: EntryData;
+  data: EntryData;
 }
 
-export interface ApprovalRequestAttributes {
-    date: string;
-    type: string;
-    message: string;
-    data_id: string;
+export interface IFileData {
+  id: number;
+  attributes: {
+    upload_date: string;
+    name: string;
+    approved: boolean;
+    reject_reason: string | null;
+    processed: boolean;
     createdAt: string;
     updatedAt: string;
-    entery: Entry;
+    uuid: string;
+    approval_send: boolean;
+  };
 }
 
 export type ApprovalRequestArray = ApprovalRequest[];
+
+
+export interface IApproval {
+  id: number;
+  attributes: {
+    createdAt: string;
+    data_id: string;
+    date: string;
+    entery: {
+      data: EntryData
+    }
+    message: string;
+    path?: string;
+    type:string;
+    updatedAt: string;
+  };
+}
