@@ -186,20 +186,6 @@ export default function PatientDialog({
           />
         )}
 
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoContainer components={['DateTimePicker']}>
-            <DateTimePicker
-              label="Upload Date & Time"
-              value={state.upload_date ? dayjs(state.upload_date) : null}
-              onChange={(newValue) => {
-                const isoString = dayjs(newValue).toISOString();
-
-                setState((items) => ({ ...items, upload_date: isoString }));
-              }}
-            />
-          </DemoContainer>
-        </LocalizationProvider>
-
         <TextField
           disabled
           label="Data File"

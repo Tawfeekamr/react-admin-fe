@@ -11,7 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { Main } from './main';
 import { layoutClasses } from '../classes';
 import { NavMobile, NavDesktop } from './nav';
-import { navData, navDataEntry, navDataNone, navDataReviser } from '../config-nav-dashboard';
+import { navData } from '../config-nav-dashboard';
 import { _workspaces } from '../config-nav-workspace';
 import { MenuButton } from '../components/menu-button';
 import { LayoutSection } from '../core/layout-section';
@@ -31,28 +31,10 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
-  const { user } = useAuthStore();
 
-  console.log('user', user);
   const [navOpen, setNavOpen] = useState(false);
 
   const layoutQuery: Breakpoint = 'lg';
-
-  const getNavData = () => {
-    if (user?.role?.type === 'admin') {
-      return navData;
-    }
-
-    if (user?.role?.type === 'datareviser') {
-      return navDataReviser;
-    }
-
-    if (user?.role?.type === 'dataentry') {
-      return navDataEntry;
-    }
-
-    return navDataNone;
-  };
 
   return (
     <LayoutSection
@@ -125,7 +107,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
        * Sidebar
        *************************************** */
       sidebarSection={
-        <NavDesktop data={getNavData()} layoutQuery={layoutQuery} workspaces={_workspaces} />
+        <NavDesktop data={navData} layoutQuery={layoutQuery} workspaces={_workspaces} />
       }
       /** **************************************
        * Footer

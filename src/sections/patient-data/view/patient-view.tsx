@@ -41,6 +41,7 @@ export function PatientView() {
 
   const { user, getUser } = useAuthStore();
   const isAdmin = user?.role.type.toLowerCase() === 'admin';
+  const isDataEntry = user?.role.type.toLowerCase() === 'dataentry' || user?.role.type.toLowerCase() === 'data_entry';
 
   const dataFiltered: IPatientData[] = applyFilter({
     inputData: patientData,
@@ -79,17 +80,19 @@ export function PatientView() {
         <Typography variant="h4" flexGrow={1}>
           Patients Data
         </Typography>
-        <Button
-          color="inherit"
-          variant="contained"
-          onClick={() => {
-            setIsEdit(false);
-            setIsDialogOpen(true);
-          }}
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          New Data
-        </Button>
+        { (isAdmin || isDataEntry) &&
+          <Button
+              color="inherit"
+              variant="contained"
+              onClick={() => {
+                setIsEdit(false);
+                setIsDialogOpen(true);
+              }}
+              startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            New Data
+          </Button>
+        }
       </Box>
 
       <Card>
