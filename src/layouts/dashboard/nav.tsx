@@ -17,6 +17,7 @@ import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
+import NewLogo from "../../components/NewLogo";
 
 // ----------------------------------------------------------------------
 
@@ -116,7 +117,7 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
 
   return (
     <>
-      <Logo />
+       <NewLogo alt="New logo" />
 
       {slots?.topArea}
 

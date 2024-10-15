@@ -9,6 +9,7 @@ import { Logo } from 'src/components/logo';
 import { Main } from './main';
 import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
+import NewLogo from "../../components/NewLogo";
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ export function AuthLayout({ sx, children, header }: AuthLayoutProps) {
                 This is an info Alert.
               </Alert>
             ),
-            leftArea: <Logo />,
+            leftArea: null,
           }}
         />
       }

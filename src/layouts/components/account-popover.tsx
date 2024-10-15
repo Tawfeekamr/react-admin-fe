@@ -83,15 +83,19 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         }}
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
-          <Typography variant="subtitle2" noWrap>
+          <Typography variant="subtitle2" noWrap sx={{textTransform: 'capitalize',}}>
             {user?.username}
           </Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+          <Typography variant="body2" sx={{ color: 'text.secondary',  }} noWrap>
             {user?.email}
           </Typography>
         </Box>
+          <Divider sx={{ borderStyle: 'dashed' }} />
 
+          <Typography variant="body2" sx={{ color: 'text.secondary', textTransform: 'capitalize', fontWeight: 'bold', textAlign: 'center' }} noWrap>
+              {user?.role.type.replaceAll("_", " ")}
+          </Typography>
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuList

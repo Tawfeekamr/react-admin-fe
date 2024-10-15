@@ -38,8 +38,9 @@ export function ApprovalTableRow({ row, selected, onSelectRow , refetch}: Approv
     const [openApproveDialog, setOpenApproveDialog] = useState(false);
     const [openRejectDialog, setOpenRejectDialog] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
-    const enteryData: EntryData = row.attributes.entery.data;
-    const patientsDataId = enteryData.id;
+    console.log('row', row);
+    const enteryData: EntryData = row?.attributes?.entery?.data;
+    const patientsDataId = enteryData?.id;
 
     const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         setOpenPopover(event.currentTarget);
@@ -139,13 +140,13 @@ export function ApprovalTableRow({ row, selected, onSelectRow , refetch}: Approv
                     <Label color="default">{row?.attributes?.type}</Label>
                 </TableCell>
                 <TableCell>
-                    <Label color={enteryData.attributes.approved ? 'success' : 'error'}>
-                        {enteryData.attributes.approved ? 'approved' : 'Not Approved'}
+                    <Label color={enteryData?.attributes?.approved ? 'success' : 'error'}>
+                        {enteryData?.attributes?.approved ? 'approved' : 'Not Approved'}
                     </Label>
                 </TableCell>
                 <TableCell align="center">
-                    <Label color={enteryData.attributes.processed ? 'success' : 'error'}>
-                        {enteryData.attributes.processed ? 'Yes' : 'No'}
+                    <Label color={enteryData?.attributes?.processed ? 'success' : 'error'}>
+                        {enteryData?.attributes?.processed ? 'Yes' : 'No'}
                     </Label>
                 </TableCell>
                 <TableCell>{fDateTime(row?.attributes?.createdAt)}</TableCell>
@@ -158,12 +159,12 @@ export function ApprovalTableRow({ row, selected, onSelectRow , refetch}: Approv
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Approve the file">
-                        <IconButton disabled={enteryData.attributes.approved} onClick={handleApprove}>
+                        <IconButton disabled={enteryData?.attributes?.approved} onClick={handleApprove}>
                             <Iconify icon="solar:verified-check-outline" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Reject the file">
-                        <IconButton disabled={enteryData.attributes.approved} onClick={handleReject}>
+                        <IconButton disabled={enteryData?.attributes?.approved} onClick={handleReject}>
                             <Iconify icon="solar:shield-cross-linear" />
                         </IconButton>
                     </Tooltip>
