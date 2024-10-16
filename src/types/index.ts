@@ -73,7 +73,7 @@ export interface ApprovalResponse {
 export interface EntryData {
   id: number;
   attributes: {
-    upload_date: string;
+    upload_date: string | Date;
     name: string;
     approved: boolean;
     reject_reason: string | null;
@@ -93,7 +93,7 @@ export interface Entry {
 export interface IFileData {
   id: number;
   attributes: {
-    upload_date: string;
+    upload_date: string | Date;
     name: string;
     approved: boolean;
     reject_reason: string | null;

@@ -75,7 +75,7 @@ export default function PatientDialog({
   const initialState = {
     name: '',
     data_file: { data: { id: 0, attributes: { url: '', ext: '' } } },
-    upload_date: null,
+    upload_date: new Date(),
     reject_reason: '',
     uuid: '',
     approved: false,

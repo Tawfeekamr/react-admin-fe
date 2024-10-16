@@ -15,7 +15,7 @@ export interface IPatientData {
     processed: boolean;
     reject_reason: string;
     approval_send: boolean;
-    upload_date: Dayjs | null;
+    upload_date: Dayjs | Date | null;
     data_file: { data: { id: number; attributes: { url: string; ext: string } } };
     approval_request: {
       data: null;
@@ -33,7 +33,7 @@ export interface IPatientUploadData {
   reject_reason: string;
   approval_send: boolean;
   data_file: { data: { id: number; attributes: { url: string; ext: string } } };
-  upload_date: Dayjs | null | string;
+  upload_date: Dayjs | null | string | Date;
   approval_request: {
     data: never[];
     disconnect: never[];
