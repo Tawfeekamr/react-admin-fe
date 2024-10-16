@@ -15,7 +15,7 @@ export default function Page() {
     const {user, getUser} = useAuthStore();
 
     useEffect(() => {
-        if (!user) {
+        if (!user || !user?.role?.type) {
             getUser();
         }
     }, [user, getUser]);
