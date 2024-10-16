@@ -94,7 +94,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
           <Divider sx={{ borderStyle: 'dashed' }} />
 
           <Typography variant="body2" sx={{ color: 'text.secondary', textTransform: 'capitalize', fontWeight: 'bold', textAlign: 'center' }} noWrap>
-              {user?.role.type.replaceAll("_", " ")}
+              {user?.role?.type?.replaceAll("_", " ")}
           </Typography>
         <Divider sx={{ borderStyle: 'dashed' }} />
 

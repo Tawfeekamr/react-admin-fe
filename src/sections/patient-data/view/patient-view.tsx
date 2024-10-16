@@ -40,8 +40,8 @@ export function PatientView() {
   const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState<boolean>(false);
 
   const { user, getUser } = useAuthStore();
-  const isAdmin = user?.role.type.toLowerCase() === 'admin';
-  const isDataEntry = user?.role.type.toLowerCase() === 'dataentry' || user?.role.type.toLowerCase() === 'data_entry';
+  const isAdmin = user?.role?.type?.toLowerCase() === 'admin';
+  const isDataEntry = user?.role?.type?.toLowerCase() === 'dataentry' || user?.role?.type?.toLowerCase() === 'data_entry';
 
   const dataFiltered: IPatientData[] = applyFilter({
     inputData: patientData,
